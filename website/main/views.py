@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .models import YourModel
 
 from rest_framework import viewsets
 from .serializers import YourModelSerializer

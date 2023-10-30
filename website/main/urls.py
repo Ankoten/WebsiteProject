@@ -8,5 +8,5 @@ router.register(r'yourmodel', YourModelViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('registration',)
+    path('registration', YourModelViewSet.as_view({'post': 'create'}), name='registration')
 ]
