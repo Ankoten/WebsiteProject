@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import YourModel
+from .models import UserModel
 
 from rest_framework import viewsets
-from .serializers import YourModelSerializer
+from .serializers import UserModelSerializer
 
 
-class YourModelViewSet(viewsets.ModelViewSet):
-    queryset = YourModel.objects.all()
-    serializer_class = YourModelSerializer
+class UserModelViewSet(viewsets.ModelViewSet):
+    queryset = UserModel.objects.all()
+    serializer_class = UserModelSerializer
 
 class UserInfoView(APIView):
     def get (self, request):
