@@ -5,13 +5,13 @@ from .models import UserModel, AdvertModel
 from .serializers import UserModelSerializer, AdvertModelSerializer
 
 
-class UserInfoView(APIView):
+class UserModelView(APIView):
     def get (self, request):
         users = UserModel.objects.all()
         return Response({'post': UserModelSerializer(users, many=True).data})
 
 
-class UserInfoView(APIView):
+class AdvertInfoView(APIView):
     def get (self, request):
         advert = AdvertModel.objects.all()
         return Response({'post': AdvertModelSerializer(advert, many=True).data})
