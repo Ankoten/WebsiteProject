@@ -1,18 +1,20 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import UserModel
+from .models import UserModel, AdvertModel
 
-from rest_framework import viewsets
-from .serializers import UserModelSerializer
+from .serializers import UserModelSerializer, AdvertModelSerializer
 
-
-class UserModelViewSet(viewsets.ModelViewSet):
-    queryset = UserModel.objects.all()
-    serializer_class = UserModelSerializer
 
 class UserInfoView(APIView):
     def get (self, request):
-        return Response({'name': 'John', 'surname': 'Jackson', 'age': 21})
+        users = UserModel.objects.all()
+        return Response({'post': UserModelSerializer(users, many=True).data})
+
+
+class UserInfoView(APIView):
+    def get (self, request):
+        advert = AdvertModel.objects.all()
+        return Response({'post': AdvertModelSerializer(advert, many=True).data})
 
 #def index(request):
     #return Response("<h4>Проверка<h4>")
