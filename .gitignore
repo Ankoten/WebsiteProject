@@ -271,4 +271,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 
-.website/main/migrations
+website/main/migrations/
