@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserModel, AdvertModel
+from .models import UserModel, AdvertModel, ImageModel
 
 
 class UserModelSerializer(serializers.ModelSerializer):
@@ -12,3 +12,8 @@ class AdvertModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdvertModel
         fields = 'all'
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageModel
+        fields = ('id', 'name', 'image')

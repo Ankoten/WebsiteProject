@@ -20,5 +20,6 @@ class AdvertModel(models.Model):
         return self.advert
 
 class ImageModel(models.Model):
-    image = models.JSONField
-    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255,default='default_name' )
+    image = models.ImageField(upload_to='images/',default= 'default_image.jpg')
+    #advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
