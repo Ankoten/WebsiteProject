@@ -14,8 +14,11 @@ class AdvertModel(models.Model):
     price = models.PositiveBigIntegerField(null=False)
     address = models.CharField(max_length=1000, null=False)
     rooms = models.PositiveSmallIntegerField(null=False)
-    image = models.CharField(max_length=100, null=False)
     description = models.TextField()
-    uuser = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     def str(self):
         return self.advert
+
+class ImageModel(models.Model):
+    image = models.JSONField
+    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
