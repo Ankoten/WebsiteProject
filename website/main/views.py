@@ -47,3 +47,16 @@ def get_image(request, image_id):
     jpeg_image.save(response, 'JPEG')
 
     return response
+
+def get_image_advert(request, advert_id):
+    # Получаем объект модели ImageModel по его ID
+    image = ImageModel.objects.get(advert=advert_id)
+    # Открываем изображение с помощью PIL
+    pil_image = ImageModel.open(image.image.path)
+    # Конвертируем изображение в формат JPEG
+    jpeg_image = pil_image.convert('RGB')
+    # Создаем HTTP-ответ с содержимым изображения в формате JPEG
+    response = HttpResponse(content_type='image/jpeg')
+    jpeg_image.save(response, 'JPEG')
+
+    return response

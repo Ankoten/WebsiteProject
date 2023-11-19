@@ -22,4 +22,4 @@ class AdvertModel(models.Model):
 class ImageModel(models.Model):
     name = models.CharField(max_length=255,default='default_name' )
     image = models.ImageField(upload_to='images/',default= 'default_image.jpg')
-    #advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
+    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
