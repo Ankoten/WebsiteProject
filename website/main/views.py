@@ -10,7 +10,6 @@ class UserModelView(APIView):
         users = UserModel.objects.all()
         return Response({'post': UserModelSerializer(users, many=True).data})
 
-
 class AdvertInfoView(APIView):
     def get (self, request):
         advert = AdvertModel.objects.all()
