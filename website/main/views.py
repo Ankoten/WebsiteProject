@@ -5,15 +5,20 @@ from .models import UserModel, AdvertModel, ImageModel
 from rest_framework import viewsets
 from django.views.generic import View
 from PIL import Image
-from .serializers import UserModelSerializer, AdvertModelSerializer, ImageSerializer
+from .serializers import UserSerializer, AdvertSerializer, ImageSerializer
 
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
 class UserModelView(APIView):
     def get (self, request):
         users = UserModel.objects.all()
         return Response({'post': UserModelSerializer(users, many=True).data})
 
-
+class AdvertViewSet(viewsets.ModelViewSet):
+    queryset = AdvertModel.objects.all()
+    serializer_class = AdvertSerializer
 class AdvertInfoView(APIView):
     def get (self, request):
         advert = AdvertModel.objects.all()
@@ -48,9 +53,9 @@ def get_image(request, image_id):
 
     return response
 
-def get_image_advert(request, advert_id):
+def get_image_advert(request, advert):
     # Получаем объект модели ImageModel по его ID
-    image = ImageModel.objects.get(advert=advert_id)
+    image = ImageModel.objects.get(adver_id=advert)
     # Открываем изображение с помощью PIL
     pil_image = ImageModel.open(image.image.path)
     # Конвертируем изображение в формат JPEG

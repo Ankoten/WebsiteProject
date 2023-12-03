@@ -15,6 +15,8 @@ class AdvertModel(models.Model):
     address = models.CharField(max_length=1000, null=False)
     rooms = models.PositiveSmallIntegerField(null=False)
     description = models.TextField()
+    payment_hcs = models.BooleanField(default=False)
+    deposit = models.PositiveBigIntegerField(default=0, null=False)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     def str(self):
         return self.advert
@@ -22,4 +24,4 @@ class AdvertModel(models.Model):
 class ImageModel(models.Model):
     name = models.CharField(max_length=255,default='default_name' )
     image = models.ImageField(upload_to='images/',default= 'default_image.jpg')
-    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE)
+    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE, default = 0)

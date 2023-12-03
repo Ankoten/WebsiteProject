@@ -2,13 +2,13 @@ from rest_framework import serializers
 from .models import UserModel, AdvertModel, ImageModel
 
 
-class UserModelSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
         fields = 'all'
 
 
-class AdvertModelSerializer(serializers.ModelSerializer):
+class AdvertSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdvertModel
         fields = 'all'
