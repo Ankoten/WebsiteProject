@@ -2,20 +2,18 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY requirements.txt /app
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-ARG APP_ENV='0.0.0.0'
-ENV APP $APP_ENV
-
-ARG APP_ENV2=5000
-ENV APP2 $APP_ENV2
 
 
-COPY . /app
 
-EXPOSE $APP2_ENV2
+COPY website .
 
-CMD cd src && flask run --host $APP --port $APP2
+EXPOSE 8000
+
+CMD python manage.py migrate
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 

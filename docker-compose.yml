@@ -9,18 +9,15 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
       POSTGRES_DB: website
-  django:
-    container_name: tarr
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    command: bash -c "python ./website/manage.py makemigrations --noinput &&
-             python ./website/manage.py migrate"
-             bash -c "python ./website/manage.py runserver"
-    volumes:
-      - .:/usr/src/taro/prediction
     ports:
-      - 8000:5432
+      - "5432:5432"
+  django:
+    container_name: website
+    build: .
+    volumes:
+      - .:/usr/src/website/prediction
+    ports:
+      - 8000:8000
     depends_on:
       - db
 
