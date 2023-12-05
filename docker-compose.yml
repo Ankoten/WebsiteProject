@@ -6,21 +6,21 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: 1
+      POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: website
   django:
     container_name: tarr
     build:
       context: ./
       dockerfile: Dockerfile
-    command: bash -c "python ./manage.py makemigrations --noinput &&
-             python ./manage.py migrate"
-             bash -c "python ./manage.py runserver"
+    command: bash -c "python ./website/manage.py makemigrations --noinput &&
+             python ./website/manage.py migrate"
+             bash -c "python ./website/manage.py runserver"
     volumes:
       - .:/usr/src/taro/prediction
     ports:
-      - 5432:5432
+      - 8000:5432
     depends_on:
       - db
 
