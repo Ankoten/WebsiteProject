@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 1
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+  django:
+    container_name: tarr
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: bash -c "python ./manage.py makemigrations --noinput &&
+             python ./manage.py migrate"
+             bash -c "python ./manage.py runserver"
+    volumes:
+      - .:/usr/src/taro/prediction
+    ports:
+      - 5432:5432
+    depends_on:
+      - db
+
+volumes:
+  pg_data:
