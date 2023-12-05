@@ -18,6 +18,16 @@ class AdvertModel(models.Model):
     payment_hcs = models.BooleanField(default=False)
     deposit = models.PositiveBigIntegerField(default=0, null=False)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    total_area = models.FloatField()(max_length=1000, null=False)
+    kitchen_area = models.FloatField()(max_length=100, null=False)
+    living_area = models.FloatField()(max_length=100, null=False)
+    price_per_meter = models.PositiveBigIntegerField(null=False)
+    ceiling_hight = models.FloatField()(max_length=1000, null=False)
+    the_method_of_sale = models.CharField(max_length=1000, null=False)
+    floor = models.PositiveSmallIntegerField(null=False)
+    prepayment = models.PositiveSmallIntegerField(null=False)
+    the_rental_period = models.CharField(max_length=100, null=False)
+    living_conditions = models.CharField(max_length=100, null=False)
     def str(self):
         return self.advert
 
