@@ -10,4 +10,4 @@ COPY website .
 
 EXPOSE 8000
 
-
+CMD ["python", "manage.py", "migrate"]
