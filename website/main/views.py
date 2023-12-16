@@ -1,11 +1,37 @@
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from .models import UserModel, AdvertModel, ImageModel
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django.views.generic import View
 from PIL import Image
 from .serializers import UserSerializer, AdvertSerializer, ImageSerializer
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def AdvertModel_detail(request, pk):
+
+    try:
+        advertM = AdvertModel.objects.get(pk=pk)
+    except AdvertModel.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AdvertSerializer(advertM)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = AdvertSerializer(advertM, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        advertM.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
