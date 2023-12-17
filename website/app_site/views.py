@@ -1,18 +1,21 @@
-from django.http import HttpResponse
+from django.contrib.auth import logout, login
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .models import UserModel, AdvertModel, ImageModel
-from rest_framework import viewsets, status
-from django.views.generic import View
-from .serializers import UserSerializer, AdvertSerializer, ImageSerializer
+from .models import Advert, Category, User, AppUser
+from rest_framework import status, viewsets, permissions
+from .serializers import AdvertSerializer, CategorySerializer, UserSerializer, UserRegistrationSerializer, \
+    UserLoginSerializer
+from .validations import custom_validation, validate_username, validate_password
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def AdvertModel_detail(request, pk):
 
     try:
-        advertM = AdvertModel.objects.get(pk=pk)
-    except AdvertModel.DoesNotExist:
+        advertM = Advert.objects.get(pk=pk)
+    except Advert.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -30,57 +33,91 @@ def AdvertModel_detail(request, pk):
         advertM.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class Advertview(APIView):
+    def get (self,request):
+        queryset = Advert.objects.all()
+        serializer = AdvertSerializer(queryset, many = True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+class Categoriesview(APIView):
+    def get (self,request):
+        queryset = Category.objects.all()
+        serializer = CategorySerializer(queryset, many = True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = UserModel.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 class UserModelView(APIView):
     def get (self, request):
-        users = UserModel.objects.all()
-        return Response({'post': UserModel(users, many=True).data})
-class AdvertViewSet(viewsets.ModelViewSet):
-    queryset = AdvertModel.objects.all()
-    serializer_class = AdvertSerializer
-class AdvertInfoView(APIView):
-    def get (self, request):
-        advert = AdvertModel.objects.all()
-        return Response({'post': AdvertModel(advert, many=True).data})
+        users = User.objects.all()
+        return Response({'post': UserSerializer(users, many=True).data})
 
-class ImageViewSet(viewsets.ModelViewSet):
-        queryset = ImageModel.objects.all()
-        serializer_class = ImageSerializer
-class ImageView(View):
-    def get(self, request, *args, **kwargs):
-        image_id = kwargs.get('image_id')
-        image = ImageModel.objects.get(id=image_id)
-        response = HttpResponse()
-        response['Content-Type'] = 'image/jpeg'
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(image.name)
-        response.write(image.image.read())
-        return response
+class UserRegister(APIView):
+    permission_classes = (permissions.AllowAny,)
 
-def get_image(request, image_id):
-    # Получаем объект модели ImageModel по его ID
-    image = ImageModel.objects.get(id=image_id)
-    # Открываем изображение с помощью PIL
-    pil_image = ImageModel.open(image.image.path)
-    # Конвертируем изображение в формат JPEG
-    jpeg_image = pil_image.convert('RGB')
-    # Создаем HTTP-ответ с содержимым изображения в формате JPEG
-    response = HttpResponse(content_type='image/jpeg')
-    jpeg_image.save(response, 'JPEG')
+    def post(self, request):
+        try:
+            clean_data = custom_validation(request.data)
+            serializer = UserRegistrationSerializer(data=clean_data)
+            if serializer.is_valid(raise_exception=True):
+                user = serializer.create(clean_data)
+                if user:
+                    login(request, user)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    return response
 
-def get_image_advert(request, advert):
-    # Получаем объект модели ImageModel по его ID
-    image = ImageModel.objects.get(adver_id=advert)
-    # Открываем изображение с помощью PIL
-    pil_image = ImageModel.open(image.image.path)
-    # Конвертируем изображение в формат JPEG
-    jpeg_image = pil_image.convert('RGB')
-    # Создаем HTTP-ответ с содержимым изображения в формате JPEG
-    response = HttpResponse(content_type='image/jpeg')
-    jpeg_image.save(response, 'JPEG')
+class UserLogin(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
 
-    return response
+    def post(self, request):
+        data = request.data
+        assert validate_username(data)
+        assert validate_password(data)
+        serializer = UserLoginSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.check_user(data)
+            login(request, user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLogout(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def post(self, request):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+    def get(self, request):
+        if request.user.is_authenticated:
+            serializer = UserSerializer(request.user)
+            return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
+
+class SaleAdCreateDeleteView(APIView):
+    def post(self, request):
+        serializer = AdvertSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            sale_ad =Advert.objects.get(pk=pk)
+            sale_ad.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Advert.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+

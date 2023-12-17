@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import UserModel, AdvertModel, ImageModel
-# Register your models here.
-admin.site.register(AdvertModel)
-admin.site.register(ImageModel)
+from .models import Advert, User, Category, AppUser
+
+admin.site.register(Advert)
+admin.site.register(User)
+admin.site.register(Category)
+admin.site.register(AppUser)

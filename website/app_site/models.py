@@ -1,9 +1,25 @@
-from django.contrib.auth.models import User
 from django.db import models
-from pathlib import Path
-from django.urls import reverse
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
-class AdvertModel(models.Model):
+class User(models.Model):
+    name = models.CharField(max_length=100,verbose_name='Имя', null=False)
+    surname = models.CharField(max_length=100,verbose_name='Фамилия', null=False)
+    telephone = models.CharField(max_length=16, verbose_name='Телефон', blank=True)
+    password = models.CharField(max_length=100,verbose_name='Пароль', null=False)
+    def __str__(self):
+        return f'{self.surname} {self.name}'
+
+class Category(models.Model):
+    title = models.CharField(max_length=30, verbose_name='Тип жилья')
+    class Meta:
+        verbose_name = 'Тип жилья'
+        verbose_name_plural = 'Типы жилья'
+
+    def __str__(self):
+        return f'Тип жилья: {self.title}'
+
+class Advert(models.Model):
     advert = models.CharField(max_length=100, null=False)
     price = models.PositiveBigIntegerField(null=False)
     address = models.CharField(max_length=1000, null=False)
@@ -21,15 +37,54 @@ class AdvertModel(models.Model):
     prepayment = models.PositiveSmallIntegerField(null=False)
     the_rental_period = models.CharField(max_length=100, null=False)
     living_conditions = models.CharField(max_length=100, null=False)
-
+    title = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     class Meta:
         verbose_name = 'Жилье'
         verbose_name_plural = 'Жилье'
-    def str(self):
-        return self.advert
+    def __str__(self):
+        return f'{self.advert} ({self.price})'
 
-class ImageModel(models.Model):
-    name = models.CharField(max_length=255,default='default_name' )
-    image = models.ImageField(upload_to='images/',default= 'default_image.jpg')
-    advert = models.ForeignKey(AdvertModel, on_delete=models.CASCADE, default = 0)
+
+class AppUserManager(BaseUserManager):
+    def create_user(self, name, email, telephone, surname, password=None):
+        if not name:
+            raise ValueError('Необходимо указать имя ')
+        if not surname:
+            raise ValueError('Необходимо указать фамилию ')
+        if not email:
+            raise ValueError('Необходимо указать почту')
+        if not password:
+            raise ValueError('Необходимо указать пароль')
+        if not telephone:
+            raise ValueError('Необходимо указать телефон')
+        email = self.normalize_email(email)
+        user = self.model(username=name, email=email)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, name, email, password=None):
+        user = self.create_user(name, email, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return user
+
+
+class AppUser(AbstractBaseUser, PermissionsMixin):
+    groups = models.ManyToManyField('auth.Group', related_name='app_users_groups')
+    user_permissions = models.ManyToManyField('auth.Permission', related_name='app_users_permissions')
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(max_length=50)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+    objects = AppUserManager()
+
+    def __str__(self):
+        return self.username
+
+
 
