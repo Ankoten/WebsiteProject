@@ -5,7 +5,6 @@ from rest_framework.decorators import api_view
 from .models import UserModel, AdvertModel, ImageModel
 from rest_framework import viewsets, status
 from django.views.generic import View
-from PIL import Image
 from .serializers import UserSerializer, AdvertSerializer, ImageSerializer
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -32,25 +31,20 @@ def AdvertModel_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
 class UserModelView(APIView):
     def get (self, request):
         users = UserModel.objects.all()
-        return Response({'post': UserModelSerializer(users, many=True).data})
-
+        return Response({'post': UserModel(users, many=True).data})
 class AdvertViewSet(viewsets.ModelViewSet):
     queryset = AdvertModel.objects.all()
     serializer_class = AdvertSerializer
 class AdvertInfoView(APIView):
     def get (self, request):
         advert = AdvertModel.objects.all()
-        return Response({'post': AdvertModelSerializer(advert, many=True).data})
-
-
+        return Response({'post': AdvertModel(advert, many=True).data})
 
 class ImageViewSet(viewsets.ModelViewSet):
         queryset = ImageModel.objects.all()
@@ -64,7 +58,6 @@ class ImageView(View):
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(image.name)
         response.write(image.image.read())
         return response
-
 
 def get_image(request, image_id):
     # Получаем объект модели ImageModel по его ID
