@@ -1,6 +1,5 @@
 from django import forms
 
-
 class FotoForm(forms.Form):
     files = forms.ImageField(
         required=False,
