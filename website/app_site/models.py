@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     groups = models.ManyToManyField('auth.Group', related_name='app_users_groups')
     user_permissions = models.ManyToManyField('auth.Permission', related_name='app_users_permissions')
     username = models.CharField(max_length=50, unique=True, default=False)
-    surname = models.CharField(max_length=100, verbose_name='Фамилия', null=False)
+    surname = models.CharField(max_length=100, verbose_name='Фамилия', null=True)
     telephone = models.CharField(max_length=16, verbose_name='Телефон', blank=True)
     email = models.EmailField(max_length=50, default=False)
     USERNAME_FIELD = 'username'
