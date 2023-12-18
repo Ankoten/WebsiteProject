@@ -3,7 +3,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .models import Advert, Category, User, AppUser
+from .models import Advert, Category, User
 from rest_framework import status, viewsets, permissions
 from .serializers import AdvertSerializer, CategorySerializer, UserSerializer, UserRegistrationSerializer, \
     UserLoginSerializer
