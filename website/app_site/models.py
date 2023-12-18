@@ -2,13 +2,6 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
-class User(models.Model):
-    name = models.CharField(max_length=100,verbose_name='Имя', null=False)
-    surname = models.CharField(max_length=100,verbose_name='Фамилия', null=False)
-    telephone = models.CharField(max_length=16, verbose_name='Телефон', blank=True)
-    password = models.CharField(max_length=100,verbose_name='Пароль', null=False)
-    def __str__(self):
-        return f'{self.surname} {self.name}'
 
 class Category(models.Model):
     title = models.CharField(max_length=30, verbose_name='Тип жилья')
@@ -58,27 +51,24 @@ class AppUserManager(BaseUserManager):
         if not telephone:
             raise ValueError('Необходимо указать телефон')
         email = self.normalize_email(email)
-        user = self.model(username=name, email=email)
+        user = self.model(username=name, surname=surname, telephone=telephone, email=email)
         user.set_password(password)
         user.save()
         return user
 
     def create_superuser(self, name, email, password=None):
         user = self.create_user(name, email, password)
-        user.is_staff = True
-        user.is_superuser = True
         user.save()
         return user
 
 
-class AppUser(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     groups = models.ManyToManyField('auth.Group', related_name='app_users_groups')
     user_permissions = models.ManyToManyField('auth.Permission', related_name='app_users_permissions')
-    user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50, unique=True)
-    email = models.EmailField(max_length=50)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    username = models.CharField(max_length=50, unique=True, default=False)
+    surname = models.CharField(max_length=100, verbose_name='Фамилия', null=True)
+    telephone = models.CharField(max_length=16, verbose_name='Телефон', blank=True)
+    email = models.EmailField(max_length=50, default=False)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
     objects = AppUserManager()

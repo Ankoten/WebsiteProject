@@ -6,8 +6,8 @@ from . import views
 
 
 urlpatterns = [
-    path("categories/", Categoriesview.as_view()),
-    path('Advert/',Advertview.as_view()),
+    path("categories/", Categoriesview.as_view(), name='categories'),
+    path('Advert/',Advertview.as_view(), name='advrert'),
     path('sale-ads/', SaleAdCreateDeleteView.as_view(), name='sale-ad-create-delete'),
     path('sale-ads/<int:pk>/', SaleAdCreateDeleteView.as_view(), name='sale-ad-delete'),
     path('register', views.UserRegister.as_view(), name='Регистрация'),
